@@ -1,0 +1,30 @@
+[
+    {
+        "id": 1,
+        "title": "cats food",
+        "categorie": "animals",
+        "text": " food is food dsf q eew aespecifically formulated and designed for consumption by cats. As obligate carnivores, cats have specific requirements for their dietary nutrients, namely nutrients found only in meat or synthesized, such as taurine and Vitamin A.[1] Certain nutrients, including many vitamins and amino acids, are degraded by the temperatures, pressures and chemical treatments used during manufacture, and hence must be added after manufacture to avoid nutritional deficiency.[2][3] Cat food is typically sold as dry kibble, or as wet food in cans and pouches.",
+        "image": "cat.jpg"
+    },
+    {
+        "id": 2,
+        "title": "dogs food",
+        "categorie": "animals",
+        "text": "dogs food is food specifically formulated and designed for consumption by cats. As obligate carnivores, cats have specific requirements for their dietary nutrients, namely nutrients found only in meat or synthesized, such as taurine and Vitamin A.[1] Certain nutrients, including many vitamins and amino acids, are degraded by the temperatures, pressures and chemical treatments used during manufacture, and hence must be added after manufacture to avoid nutritional deficiency.[2][3] Cat food is typically sold as dry kibble, or as wet food in cans and pouches.",
+        "image": "dog.jpg"
+    },
+    {
+        "id": 3,
+        "title": "cats food",
+        "categorie": "animals",
+        "text": "Cat food is food specifically formulated and designed for consumption by cats. As obligate carnivores, cats have specific requirements for their dietary nutrients, namely nutrients found only in meat or synthesized, such as taurine and Vitamin A.[1] Certain nutrients, including many vitamins and amino acids, are degraded by the temperatures, pressures and chemical treatments used during manufacture, and hence must be added after manufacture to avoid nutritional deficiency.[2][3] Cat food is typically sold as dry kibble, or as wet food in cans and pouches.",
+        "image": "cat.jpg"
+    },
+    {
+        "id": 53,
+        "title": "morocco",
+        "categorie": "countries",
+        "text": "Morroco specifically formulated and designed for consumption by cats. As obligate carnivores, cats have specific requirements for their dietary nutrients, namely nutrients found only in meat or synthesized, such as taurine and Vitamin A.[1] Certain nutrients, including many vitamins and amino acids, are degraded by the temperatures, pressures and chemical treatments used during manufacture, and hence must be added after manufacture to avoid nutritional deficiency.[2][3] Cat food is typically sold as dry kibble, or as wet food in cans and pouches.",
+        "image": "book.jpg"
+    }
+]

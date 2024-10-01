@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground: #000;
+}
+/* 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground: #fff;
+  }
+} */
+
+body {
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@font-face {
+  font-family: montserrat;
+  src: url("./fonts/montserrat/Montserrat-Medium.ttf");
+}
+
+.--font-montserrat{
+  font-family: montserrat;
+}
