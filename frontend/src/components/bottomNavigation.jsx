@@ -24,7 +24,7 @@ export default function SimpleBottomNavigation() {
         >
           <BottomNavigationAction onClick={() => {router.push("/")}} label="home" icon={<HomeRoundedIcon />} />
           <BottomNavigationAction onClick={() => {router.push("/search")}} label="search" icon={<SearchIcon />} />
-          <BottomNavigationAction onClick={() => {router.push("/account")}} label="account" icon={<PersonRoundedIcon />} />
+          <BottomNavigationAction onClick={() => {router.push("/account/sign_in")}} label="account" icon={<PersonRoundedIcon />} />
 
     </BottomNavigation>
       </Box>

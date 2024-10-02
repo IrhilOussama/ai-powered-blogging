@@ -1,8 +1,9 @@
+'use client';
 import { Box, Button, Container, TextField, Typography } from "@mui/material";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Account(){
-
+    const router = useRouter();
 
     return (
         <Container sx={{
@@ -22,12 +23,12 @@ export default function Account(){
                 <TextField fullWidth variant="outlined" size="small" label="email" type="email" margin="normal" required />
                 <TextField fullWidth variant="outlined" size="small" label="password" type="password" margin="normal" required  />
                 <Button sx={{margin: '10px auto 20px'}} size="small" variant="contained">
-                    <Link href={"/account/user"}>Sign Up</Link>
+                    Sign Up
                 </Button>
             </Box>
             <Typography fontSize={14} component="p">
                 Have an accound?
-                <Typography fontSize={14} color="primary" component="span"> <Link href={"sign_in"}> Sign In </Link> </Typography>
+                <Button sx={{fontSize: 14}}  color="primary" component="span" onClick={() => router.push("/account/sign_in")}>Sign In</Button>
             </Typography>
         </Container>
     )

@@ -31,7 +31,7 @@ function MyCard({variant, id, categorie, title, text, image}){
         </CardContent>
         <CardMedia
             sx={{ height: 200 }}
-            image={"/imgs/" + image}
+            image={"http://localhost:8000/storage/" + image}
             title="green iguana"
         />
       </CardActionArea>
@@ -57,11 +57,11 @@ function OutlinedCard({id, categorie, title, text, image}) {
 export default function Blogs() {
 
   const [blogs, setBlogs] = useState([]);
-  const url = "/json/blogs.json";
+  const url = "http://localhost:8000/api/blogs";
 
   const fetchBlogs = async () => {
       const data = await axios.get(url);
-      console.log(data)
+
       setBlogs(data.data);
   }
 
@@ -70,7 +70,7 @@ export default function Blogs() {
   }, [])
 
   const cardsNode = blogs.map((blog, i) => {
-    return <OutlinedCard key={i} id={blog.id} categorie={blog.categorie} text={blog.text} image={blog.image} />
+    return <OutlinedCard key={i} id={blog.id} categorie={blog['categorie_title']} text={blog.description} image={blog.image} />
   })
   return (
     <Container maxWidth="xs">
