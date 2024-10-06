@@ -1,7 +1,9 @@
-// "use client";
-import { lazy, Suspense } from "react";
+"use client";
+import { lazy, Suspense, useContext, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { CircularProgress } from "@mui/material";
+import { AppContext } from "./home";
+import Head from "next/head";
 
 const Blogs = dynamic(() => import('./blogs'), {
   ssr: false,
@@ -10,7 +12,17 @@ const Blogs = dynamic(() => import('./blogs'), {
   </div> 
 })
 export default function Home(){
+  const [bottomNavValue, setBottomNavValue] = useContext(AppContext);
+  useEffect(() => {
+    setBottomNavValue(0);
+
+  }, [setBottomNavValue])
   return(
+    <>
+        <Head>
+        <title>My page title</title>
+      </Head>
       <Blogs />
+    </>
   )
 }

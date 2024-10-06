@@ -1,12 +1,11 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CategorieController;
-use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// Route::get('/blogs', function () {
+// Route::get('/potato', function () {
 //     return 'hello, these are blogs';
 // })->middleware('auth:sanctum');
 
@@ -14,7 +13,11 @@ use Illuminate\Support\Facades\Route;
 //     return 'hello, these are blogs';
 // });
 
-Route::resource("blogs", BlogController::class);
-Route::resource("categories", CategorieController::class);
+// Apply auth middleware only to store, update, and destroy methods
+Route::resource("blogs", BlogController::class)->except(['index', 'show'])->middleware('auth:sanctum');
 
-Route::post("/sign_in", [UserController::class, "sign_in"]);
+// Index and show actions can be accessed without authentication
+Route::resource("blogs", BlogController::class)->only(['index', 'show']);
+
+Route::post("/sign_in", [AuthController::class, "sign_in"]);
+Route::post("/login", [AuthController::class, "login"]);

@@ -16,7 +16,7 @@ export default function User(){
                 }}>
                 <Image alt="user image" width={50} height={50} src={"/imgs/profiles/default.png"} />
                 <Typography fontSize={20} sx={{marginLeft: 5}} fontWeight={"bold"}>
-                    Oussama Irhil
+                    {JSON.parse(localStorage.getItem('user')).username}
                 </Typography>
             </Box>
             <Box>

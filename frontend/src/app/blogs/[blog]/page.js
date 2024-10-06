@@ -1,30 +1,33 @@
 "use client";
-import { Typography } from "@mui/material";
+import NotFound from "@/app/not-found";
+import notFound from "@/app/not-found";
+import { CircularProgress, generateUtilityClass, Typography } from "@mui/material";
 import Container from "@mui/material/Container";
+import axios from "axios";
 import Image from "next/image";
 import { Suspense, useEffect, useState } from "react";
 
 export default function Blog({params}){
     const id = params.blog;
-    const [myBlog, setMyBlog] = useState({id: 0});
-
-    const getBlog = async () => {
-        const response = await fetch("/json/blogs.json");
-        const blogs = await response.json();
-        let blog;
-        blogs.forEach(b =>{
-            if (b.id == id) blog = b;
-        });
-        setMyBlog(blog);
-    }
-
+    const [status, setStatus] = useState('waiting');
+    const [myBlog, setMyBlog] = useState({});
+    
     useEffect(() => {
+        const getBlog = async () => {
+            try{
+                const data = await axios.get("http://100.97.112.28:8000/api/blogs/"+id);
+                setMyBlog(data.data);
+                setStatus("success");
+            }
+            catch(error){
+                setStatus("not_found");
+            }
+        }
         getBlog();
-    }, [])
+    }, [id]);
 
-    // if (myBlog.id !== 0){
+    if (status === 'success'){
         return(
-
             <Suspense fallback={
                 <div>
                     Loading
@@ -33,7 +36,7 @@ export default function Blog({params}){
                     
                 <Container>
                     <Typography variant="body1" color="success" >
-                    {myBlog.categorie}
+                    {myBlog['categorie_title']}
                     </Typography>
 
                     <Typography variant="h4" component="h1" gutterBottom >
@@ -41,21 +44,21 @@ export default function Blog({params}){
                     </Typography>
 
                     <Typography >
-                    {myBlog.text}
+                    {myBlog.description}
                     </Typography>
                     <div style={{height: "300px" ,position: "relative"}}>
-                        <Image src ={"/imgs/" + myBlog.image} fill sizes="100vw" alt="blog image" style={{objectFit: "contain"}} />
+                        <Image src ={"http://100.97.112.28:8000/storage/" + myBlog.image} fill sizes="100vw" alt="blog image" style={{objectFit: "contain"}} />
                     </div>
                 </Container>
             </Suspense>
         )
-    // }            
-    // else {
-    //     return(
-    //         <div>
-    //             wait a moment...
-    //         </div>
-            
-    //     )
-    // }
+    }            
+    else if (status === 'waiting') {
+        return <div className=" fixed top-0 left-0 w-full h-full flex justify-center items-center">
+        <CircularProgress/>
+      </div> 
+    }
+    else if(status === 'not_found'){
+        return <NotFound />
+    }
 }

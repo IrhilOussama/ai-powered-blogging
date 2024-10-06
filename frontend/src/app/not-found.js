@@ -2,7 +2,7 @@ import { Button, Container, Typography } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function notFound(){
+export default function NotFound(){
     return(
         <Container sx={{}}>
             <Typography sx={{position: "absolute", top: '40%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center'}}>

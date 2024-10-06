@@ -12,9 +12,19 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { Suspense } from 'react';
+import { Facebook } from '@mui/icons-material';
 
 function MyCard({variant, id, categorie, title, text, image}){
   const router = useRouter();
+  
+  const shareMenu = async () => {
+  //   await navigator.share({
+  //     title: title,    // Blog title
+  //     text: text,      // Blog text or description
+  //     url: "/localhost:8000",        // Blog URL
+  // });
+  }
+
   return (
     <Card variant={variant}>
       <CardActionArea>
@@ -23,22 +33,22 @@ function MyCard({variant, id, categorie, title, text, image}){
             {categorie}
           </Typography>
           <Typography variant="h5" component="div" gutterBottom>
-            {title}
+            {title.substring(0, 20)}
           </Typography>
           <Typography variant="body2">
-            {text}
+            {text.substring(0, 300)}...
           </Typography>
         </CardContent>
         <CardMedia
             sx={{ height: 200 }}
-            image={"http://localhost:8000/storage/" + image}
+            image={"http://100.97.112.28:8000/storage/" + image}
             title="green iguana"
         />
       </CardActionArea>
 
       <CardActions>
       <Button onClick={() => router.push("/blogs/" + id)} variant={"outlined"} size="small">Learn More</Button>
-      <Button variant={"outlined"} size="small">share</Button>
+      <Button variant={"outlined"} onClick={() => {shareMenu()}} size="small">share<Facebook/> </Button>
       </CardActions>
     </Card>
   )
@@ -57,20 +67,19 @@ function OutlinedCard({id, categorie, title, text, image}) {
 export default function Blogs() {
 
   const [blogs, setBlogs] = useState([]);
-  const url = "http://localhost:8000/api/blogs";
+  const url = "http://100.97.112.28:8000/api/blogs";
 
-  const fetchBlogs = async () => {
-      const data = await axios.get(url);
-
-      setBlogs(data.data);
-  }
-
+  
   useEffect(() => {
+    const fetchBlogs = async () => {
+        const data = await axios.get(url);
+        setBlogs(data.data);
+    }
       fetchBlogs();
   }, [])
 
   const cardsNode = blogs.map((blog, i) => {
-    return <OutlinedCard key={i} id={blog.id} categorie={blog['categorie_title']} text={blog.description} image={blog.image} />
+    return <OutlinedCard key={i} id={blog.id} title={blog.title} categorie={blog['categorie_title']} text={blog.description} image={blog.image} />
   })
   return (
     <Container maxWidth="xs">

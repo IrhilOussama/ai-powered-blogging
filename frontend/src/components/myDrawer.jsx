@@ -9,17 +9,24 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import CategoryRoundedIcon from '@mui/icons-material/CategoryRounded';
+import Logout from '@/utils/logout';
+import { useRouter } from 'next/navigation';
+import { isAuthenticated } from '@/utils/auth';
 
 export default function TemporaryDrawer() {
   const [open, setOpen] = React.useState(false);
+  const router = useRouter();
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
   };
+
+  const handleLogout = () => {
+    Logout();
+    router.push("/");
+  }
 
   const DrawerList = (
     <Box sx={{ width: 250}} role="presentation" onClick={toggleDrawer(false)}>
@@ -37,13 +44,27 @@ export default function TemporaryDrawer() {
       <Divider />
 
       <List>
-        {['contact us', 'about'].map((text, index) => (
-          <ListItem key={text} disablePadding>
+
+          <ListItem key={0} disablePadding>
             <ListItemButton>
-              <ListItemText primary={text} />
+              <ListItemText primary={'contact us'} />
             </ListItemButton>
           </ListItem>
-        ))}
+
+          <ListItem key={1} disablePadding>
+            <ListItemButton>
+              <ListItemText primary={'about'} />
+            </ListItemButton>
+          </ListItem>
+
+          {isAuthenticated() && (
+            <ListItem key={2} disablePadding>
+              <ListItemButton>
+                <ListItemText primary={'logout'} onClick={handleLogout} />
+              </ListItemButton>
+            </ListItem>
+          )}
+
       </List>
     </Box>
   );

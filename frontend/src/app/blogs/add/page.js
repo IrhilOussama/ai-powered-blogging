@@ -2,11 +2,14 @@
 import { Box, Button, Container, Input, TextareaAutosize, TextField, Typography } from "@mui/material";
 import { useRef, useState } from "react";
 import axios from "axios";
+import { purple } from "@mui/material/colors";
+import { useRouter } from "next/navigation";
 
 export default function AddBlog(){
     const [blogTitle, setBlotTitle] = useState('');
     const [blogDescription, setBlogDescription] = useState('');
     const [image, setImage] = useState('');
+    const router = useRouter()
     
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -15,18 +18,16 @@ export default function AddBlog(){
         formData.append("description", blogDescription);
         formData.append("categorie_id", 6);
         formData.append("image", image);
-
-
         try {
             // Post request to your Laravel backend
-            const response = await axios.post('http://localhost:8000/api/blogs', formData, {
+            const response = await axios.post('http://100.97.112.28:8000/api/blogs', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${JSON.parse(localStorage.getItem("user")).token}`
             },
             });
-            
             console.log('Response:', response.data);
-            alert('Form submitted successfully');
+            router.push('/');
         } catch (error) {
             console.error('Error submitting form:', error);
         }
@@ -51,7 +52,7 @@ export default function AddBlog(){
                     display: "block",
                     fontSize: 14,
                 }} />
-                <input type="file" accept="image/*" onChange={(e) => {setImage(e.target.files[0])}} required />
+                <input type="file" accept="image/*" className="block my-8 mx-auto w-4/6" onChange={(e) => {setImage(e.target.files[0])}} required />
                 <Button type="submit" color="secondary" variant="contained" sx={{fontSize: 12}} >
                     Publish
                 </Button>

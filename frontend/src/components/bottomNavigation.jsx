@@ -5,12 +5,13 @@ import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import ShoppingCartRoundedIcon from '@mui/icons-material/ShoppingCartRounded';
 import SearchIcon from '@mui/icons-material/Search';
 import { BottomNavigation, BottomNavigationAction, Box } from '@mui/material';
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Link from 'next/link';
+import { AppContext } from '@/app/home'; 
 
 // Bottom Navigation
 export default function SimpleBottomNavigation() {
-    const [value, setValue] = useState(0);
+  const [value, setValue] = useContext(AppContext);
     const router = useRouter();
   
     return (
@@ -19,11 +20,12 @@ export default function SimpleBottomNavigation() {
           showLabels
           value={value}
           onChange={(event, newValue) => {
+            console.log(value)
             setValue(newValue);
           }}
         >
           <BottomNavigationAction onClick={() => {router.push("/")}} label="home" icon={<HomeRoundedIcon />} />
-          <BottomNavigationAction onClick={() => {router.push("/search")}} label="search" icon={<SearchIcon />} />
+          <BottomNavigationAction onClick={() => {router.push("/blogs/search")}} label="search" icon={<SearchIcon />} />
           <BottomNavigationAction onClick={() => {router.push("/account/sign_in")}} label="account" icon={<PersonRoundedIcon />} />
 
     </BottomNavigation>
