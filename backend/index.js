@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2');
 const path = require('path');
@@ -8,12 +9,17 @@ app.use(express.json());
 // Serve images from /public/images
 app.use('/api/images', express.static(path.join(__dirname, 'public/images')));
 
+console.log(process.env.DB_HOST)
+console.log(process.env.DB_USER)
+console.log(process.env.DB_PASS)
+console.log(process.env.DB_NAME)
+
 // Create a MySQL connection
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'helloworld',
-    database: 'blogsdb'
+    host: process.env.DB_HOST,
+    user: "root",
+    password: "helloworld",
+    database: process.env.DB_NAME
 });
 
 db.connect(err => {
@@ -134,7 +140,7 @@ app.delete('/api/categories/:id', (req, res) => {
     });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
