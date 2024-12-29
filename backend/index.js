@@ -76,6 +76,7 @@ app.put("/api/blogs/:id", (req, res) => {
         [title, description, categorie_id, image, id],
         (err, results) => {
             if (err) return res.status(500).json({error: err.message});
+            if (results.affectedRows == 0) return res.status(400).json({error: "no such id exist"});
             res.json({id, title, description, categorie_id, image});
         }
     )
@@ -185,7 +186,7 @@ app.put('/api/categories/:id', (req, res) => {
 app.delete('/api/categories/:id', async (req, res) => {
     const { id } = req.params;
     try{
-        const results = await db.promise().query("SELECT COUNT(*) as rowCount FROM blogs WHERE categorie_id = ?", [id]);
+        const [results] = await db.promise().query("SELECT COUNT(*) as rowCount FROM blogs WHERE categorie_id = ?", [id]);
         if (results[0].rowCount > 0){
             return res.status(400).json({message: "can't delete categorie while associated blogs exist"})
         }
