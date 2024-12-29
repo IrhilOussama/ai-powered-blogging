@@ -2,12 +2,14 @@ require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2');
 const path = require('path');
+const cors = require('cors');
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 // Serve images from /public/images
-app.use('/api/images', express.static(path.join(__dirname, 'public/images')));
+app.use('/api/images', express.static(path.join(__dirname, 'public/images/blogs/converted')));
 
 console.log(process.env.DB_HOST)
 console.log(process.env.DB_USER)
@@ -30,6 +32,15 @@ db.connect(err => {
     console.log('Connected to the MySQL database.');
 });
 
+app.get('/api/blogs/title', (req, res) => {
+    db.query('SELECT title FROM blogs', (err, results) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json(results.map(e => e['title']));
+    });
+});
+
 // Get all blogs
 app.get('/api/blogs', (req, res) => {
     db.query('SELECT * FROM blogs', (err, results) => {
@@ -39,6 +50,8 @@ app.get('/api/blogs', (req, res) => {
         res.json(results);
     });
 });
+
+
 
 // Get a single blog by ID
 app.get('/api/blogs/:id', (req, res) => {
