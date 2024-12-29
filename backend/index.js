@@ -17,8 +17,8 @@ console.log(process.env.DB_NAME)
 // Create a MySQL connection
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
-    user: "root",
-    password: "helloworld",
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
     database: process.env.DB_NAME
 });
 
@@ -53,14 +53,67 @@ app.get('/api/blogs/:id', (req, res) => {
 
 // Create a new blog
 app.post('/api/blogs', (req, res) => {
-    const { title, content } = req.body;
-    db.query('INSERT INTO blogs (title, content) VALUES (?, ?)', [title, content], (err, results) => {
+    let { title, description, categorie_id, rank, image, author_id } = req.body;
+    rank = rank | 0;
+    image = image | "default.jpg";
+    if (!title || !description || !categorie_id || !author_id){
+        res.status(400).json({message: "title, description, categorie_id and author_id are required"})
+    }
+    db.query('INSERT INTO blogs (title, description, categorie_id, value, image, author_id) VALUES (?, ?, ?, ?, ?, ?)',
+        [title, description, categorie_id, rank, image, author_id], (err, results) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        res.status(201).json({ id: results.insertId, title, content });
+        res.status(201).json({ id: results.insertId, title, description, categorie_id, rank, image, author_id });
     });
 });
+
+// Updata a blog
+app.put("/api/blogs/:id", (req, res) => {
+    let {id} = req.params;
+    let {title, description, categorie_id, image} = req.body;
+    db.query("UPDATE blogs SET title = ?, description = ?, categorie_id = ?, image = ? WHERE id = ?", 
+        [title, description, categorie_id, image, id],
+        (err, results) => {
+            if (err) return res.status(500).json({error: err.message});
+            res.json({id, title, description, categorie_id, image});
+        }
+    )
+})
+
+// Delete a blog
+app.delete("/api/blogs/:id", (req, res) => {
+    const {id} = req.params;
+    db.query("DELETE FROM blogs WHERE id = ?", [id], (err, results) => {
+        if (err) return res.status(500).json({error: err.message});
+        res.json({id: id});
+    })
+})
+
+
+
+
+// USERS
+// get all users
+app.get("/api/users", (req, res) => {
+    db.query("SELECT id, name, email, password FROM users", (err, results) => {
+        if (err) {
+            return res.status(500).json({error: err.message});
+        }
+        res.json(results);
+    })
+})
+
+// create a new user
+app.post("/api/users", (req, res) => {
+    const {name, email, password} = req.body;
+    db.query('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', [name, email, password], (err, results) => {
+        if (err) {
+            return res.status(500).json({error: err.message});
+        }
+        res.json({id: results.insertId, name, password})
+    })
+})
 
 // Update a blog by ID
 app.put('/api/blogs/:id', (req, res) => {
@@ -85,15 +138,24 @@ app.delete('/api/blogs/:id', (req, res) => {
     });
 });
 
-// Get all categories
-app.get('/api/categories', (req, res) => {
-    db.query('SELECT * FROM categories', (err, results) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
+
+// CATEGORIES
+// get all categories
+app.get("/api/categories", (req, res) => {
+    db.query("SELECT * FROM categories", (err, results) => {
+        if (err) return res.status(500).json({error: err.message});
         res.json(results);
-    });
-});
+    })
+})
+//create a new categorie
+app.post("/api/categories", (req, res) => {
+    let {title} = req.body;
+    db.query("INSERT INTO categories (title) VALUES (?)", [title], (err, results) => {
+        if (err) return res.status(500).json({error: err.message});
+        res.json({id: results.insertId, title});
+    } )
+})
+
 
 // Get a single category by ID
 app.get('/api/categories/:id', (req, res) => {
@@ -106,39 +168,36 @@ app.get('/api/categories/:id', (req, res) => {
     });
 });
 
-// Create a new category
-app.post('/api/categories', (req, res) => {
-    const { name } = req.body;
-    db.query('INSERT INTO categories (name) VALUES (?)', [name], (err, results) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.status(201).json({ id: results.insertId, name });
-    });
-});
 
 // Update a category by ID
 app.put('/api/categories/:id', (req, res) => {
     const { id } = req.params;
-    const { name } = req.body;
-    db.query('UPDATE categories SET name = ? WHERE id = ?', [name, id], (err) => {
+    const { title } = req.body;
+    db.query('UPDATE categories SET title = ? WHERE id = ?', [title, id], (err) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        res.json({ id, name });
+        res.json({ id, title });
     });
 });
 
 // Delete a category by ID
-app.delete('/api/categories/:id', (req, res) => {
+app.delete('/api/categories/:id', async (req, res) => {
     const { id } = req.params;
-    db.query('DELETE FROM categories WHERE id = ?', [id], (err) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
+    try{
+        const results = await db.promise().query("SELECT COUNT(*) as rowCount FROM blogs WHERE categorie_id = ?", [id]);
+        if (results[0].rowCount > 0){
+            return res.status(400).json({message: "can't delete categorie while associated blogs exist"})
         }
+        await db.promise().query('DELETE FROM categories WHERE id = ?', [id]);
         res.status(204).send();
-    });
+    }
+    catch(err){
+        return res.status(500).json({error: err.message})
+    }
 });
+
+
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
