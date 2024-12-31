@@ -7,6 +7,8 @@ import axios from "axios";
 import Image from "next/image";
 import { Suspense, useEffect, useState } from "react";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export default function Blog({params}){
     const id = params.blog;
     const [status, setStatus] = useState('waiting');
@@ -15,7 +17,7 @@ export default function Blog({params}){
     useEffect(() => {
         const getBlog = async () => {
             try{
-                const data = await axios.get("http://100.97.112.28:8000/api/blogs/"+id);
+                const data = await axios.get(API_URL + "/blogs/" + id);
                 setMyBlog(data.data);
                 setStatus("success");
             }
@@ -47,7 +49,7 @@ export default function Blog({params}){
                     {myBlog.description}
                     </Typography>
                     <div style={{height: "300px" ,position: "relative"}}>
-                        <Image src ={"http://100.97.112.28:8000/storage/" + myBlog.image} fill sizes="100vw" alt="blog image" style={{objectFit: "contain"}} />
+                        <Image src ={API_URL + "/images/" + myBlog.image} fill sizes="100vw" alt="blog image" style={{objectFit: "contain"}} />
                     </div>
                 </Container>
             </Suspense>

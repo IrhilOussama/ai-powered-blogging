@@ -5,6 +5,8 @@ import { Autocomplete, TextField } from "@mui/material";
 import axios from "axios";
 import { useState, useContext, useEffect } from "react";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export default function Search(){
     const [question, setQuestion] = useState("");
     const [bottomNavValue, setBottomNavValue] = useContext(AppContext);
@@ -12,7 +14,7 @@ export default function Search(){
 
     useEffect(() => {
         const getTitles = async () => {
-            const data = await axios.get('http://100.97.112.28:8000/api/blogs?only=title');
+            const data = await axios.get(API_URL + '/blogs?only=title');
             setTitles(data.data.map(titleObj => titleObj['title']))
         }
         getTitles();

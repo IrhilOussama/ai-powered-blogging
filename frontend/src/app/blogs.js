@@ -14,6 +14,8 @@ import { useRouter } from 'next/navigation';
 import { Suspense } from 'react';
 import { Facebook } from '@mui/icons-material';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 function MyCard({variant, id, categorie, title, text, image}){
   const router = useRouter();
   
@@ -41,7 +43,7 @@ function MyCard({variant, id, categorie, title, text, image}){
         </CardContent>
         <CardMedia
             sx={{ height: 200 }}
-            image={"http://100.97.112.28:8000/storage/" + image}
+            image={API_URL + "/images/" + image}
             title="green iguana"
         />
       </CardActionArea>
@@ -67,7 +69,7 @@ function OutlinedCard({id, categorie, title, text, image}) {
 export default function Blogs() {
 
   const [blogs, setBlogs] = useState([]);
-  const url = "http://100.97.112.28:8000/api/blogs";
+  const url = API_URL + "/blogs";
 
   
   useEffect(() => {
