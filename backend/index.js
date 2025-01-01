@@ -3,13 +3,16 @@ const express = require('express');
 const { Pool } = require('pg'); // Import pg Pool
 const path = require('path');
 const cors = require('cors');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
 // Serve images from /public/images
-app.use('/api/images', express.static(path.join(__dirname, 'public/images/blogs/converted')));
+app.use('/api/blogs/images', express.static(path.join(__dirname, 'public/images/blogs/converted')));
+app.use('/api/blogs/backup-images', express.static(path.join(__dirname, 'public/images/blogs/bakckup')));
 
 // Create a PostgreSQL connection pool
 const pool = new Pool({
@@ -30,7 +33,7 @@ pool.connect((err) => {
 
 // Get all blogs
 app.get('/api/blogs', (req, res) => {
-  pool.query('SELECT * FROM blogs', (err, result) => {
+  pool.query('SELECT blogs.*, profile.name FROM blogs JOIN profile ON blogs.author_id = profile.id', (err, result) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -41,7 +44,7 @@ app.get('/api/blogs', (req, res) => {
 // Get a single blog by ID
 app.get('/api/blogs/:id', (req, res) => {
   const { id } = req.params;
-  pool.query('SELECT * FROM blogs WHERE id = $1', [id], (err, result) => {
+  pool.query('SELECT blogs.*, profile.name FROM blogs JOIN profile ON blogs.author_id = profile.id WHERE blogs.id = $1', [id], (err, result) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -116,20 +119,79 @@ app.get('/api/users', (req, res) => {
   });
 });
 
-// Create a new user
-app.post('/api/users', (req, res) => {
+
+// /register user
+app.post('/api/register', async (req, res) => {
   const { name, email, password } = req.body;
-  pool.query(
-    'INSERT INTO profile (name, email, password) VALUES ($1, $2, $3) RETURNING id',
-    [name, email, password],
-    (err, result) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      res.json({ id: result.rows[0].id, name, email });
+
+  // Validate input
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required.' });
+  }
+
+  try {
+    // Check if the email already exists in the database
+    const { rows } = await pool.query('SELECT * FROM profile WHERE email = $1', [email]);
+    if (rows.length > 0) {
+      return res.status(400).json({ error: 'Email already in use.' });
     }
-  );
+
+    // Hash the password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Insert the new user into the database
+    const result = await pool.query(
+      'INSERT INTO profile (name, email, password) VALUES ($1, $2, $3) RETURNING id, email',
+      [name, email, hashedPassword]
+    );
+
+    const user = result.rows[0];
+    res.status(201).json({ message: 'User registered successfully!', user });
+  } catch (error) {
+    console.error('Error registering user:', error);
+    res.status(500).json({ error: 'Server error. Please try again later.' });
+  }
 });
+
+// Login
+
+const JWT_SECRET = 'mySuperSecureRandomKey12345!@#$%&*45678';
+app.post('/api/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    // Validate input
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password are required.' });
+    }
+
+    try {
+        // Check if the user exists
+        const result = await pool.query('SELECT * FROM profile WHERE email = $1', [email]);
+        const user = result.rows[0];
+
+        if (!user) {
+            return res.status(401).json({ error: 'Invalid email or password.' });
+        }
+        // Compare the provided password with the stored hash
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ error: 'Invalid email or password.' });
+        }
+
+        // Generate a JWT token
+        const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
+
+        // Respond with the token
+        res.json({ token, userId: user.id, username: user.username });
+    } catch (err) {
+        console.error('Error during login:', err);
+        res.status(500).json({ error: 'An error occurred while processing your request.' });
+    }
+});
+
+
+
 
 // CATEGORIES
 
