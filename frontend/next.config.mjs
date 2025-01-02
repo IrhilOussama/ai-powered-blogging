@@ -6,7 +6,7 @@ const nextConfig = {
           protocol: 'http',
           hostname: 'localhost',
           port: '8000', // Include the port if necessary
-          pathname: '/api/images/**', // Adjust this to match the URL path of your images
+          pathname: '/api/**', // Adjust this to match the URL path of your images
         },
       ],
     },

@@ -1,6 +1,5 @@
 "use client";
 import NotFound from "@/app/not-found";
-import notFound from "@/app/not-found";
 import { CircularProgress, generateUtilityClass, Typography } from "@mui/material";
 import Container from "@mui/material/Container";
 import axios from "axios";
@@ -49,8 +48,19 @@ export default function Blog({params}){
                     {myBlog.description}
                     </Typography>
                     <div style={{height: "300px" ,position: "relative"}}>
-                        <Image src ={API_URL + "/images/" + myBlog.image} fill sizes="100vw" alt="blog image" style={{objectFit: "contain"}} />
+                        <Image
+                            src ={API_URL + "/blogs/images/" + myBlog.image.split(".")[0] + ".webp"}
+                            onError={(e) => {
+                                e.target.error = false;
+                                e.target.src =API_URL + "/blogs/backup-images/" + myBlog.image
+                            }}
+
+                            fill sizes="100vw" alt="blog image" 
+                            style={{objectFit: "contain"}} />
                     </div>
+                    <Typography>
+                        By {myBlog.name}
+                    </Typography>
                 </Container>
             </Suspense>
         )

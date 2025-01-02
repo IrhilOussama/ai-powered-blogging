@@ -16,7 +16,7 @@ import { Facebook } from '@mui/icons-material';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-function MyCard({variant, id, categorie, title, text, image}){
+function MyCard({variant, id, categorie, title, text, image, author_name}){
   const router = useRouter();
   
   const shareMenu = async () => {
@@ -42,24 +42,32 @@ function MyCard({variant, id, categorie, title, text, image}){
           </Typography>
         </CardContent>
         <CardMedia
+            component={"img"}
             sx={{ height: 200 }}
-            image={API_URL + "/images/" + image}
+            src={API_URL + "/blogs/images/" + image.split(".")[0] + ".webp"}
             title="green iguana"
+            onError={(e) => {
+              e.target.onerror = null; // Prevent infinite loop in case backup URL also fails
+              e.target.src = API_URL + "/blogs/backup-images/" + image;
+          }}
         />
       </CardActionArea>
 
       <CardActions>
       <Button onClick={() => router.push("/blogs/" + id)} variant={"outlined"} size="small">Learn More</Button>
       <Button variant={"outlined"} onClick={() => {shareMenu()}} size="small">share<Facebook/> </Button>
+      <Typography variant="body2">
+        By {author_name}
+      </Typography>
       </CardActions>
     </Card>
   )
 }
 
-function OutlinedCard({id, categorie, title, text, image}) {
+function OutlinedCard({id, categorie, title, text, image, author_name}) {
   return (
     <Box sx={{ minWidth: 275, marginBottom: 5 }}>
-      <MyCard id={id} variant="outlined" categorie={categorie} title={title} text={text} image={image} />
+      <MyCard id={id} variant="outlined" categorie={categorie} title={title} text={text} image={image} author_name={author_name} />
     </Box>
   );
 }
@@ -81,13 +89,13 @@ export default function Blogs() {
   }, [])
 
   const cardsNode = blogs.map((blog, i) => {
-    return <OutlinedCard key={i} id={blog.id} title={blog.title} categorie={blog['categorie_title']} text={blog.description} image={blog.image} />
+    return <OutlinedCard key={i} id={blog.id} title={blog.title} categorie={blog['categorie_title']} text={blog.description} image={blog.image} author_name={blog.name} />
   })
   return (
     <Container maxWidth="xs">
         <Suspense fallback={
             <div>
-                aaaa
+                loading blogs
             </div>
         }>
         {cardsNode}
