@@ -5,6 +5,7 @@ const path = require('path');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const JWT_SECRET = 'mySuperSecureRandomKey12345!@#$%&*45678';
 
 const app = express();
 app.use(express.json());
@@ -31,6 +32,18 @@ pool.connect((err) => {
   console.log('Connected to the PostgreSQL database.');
 });
 
+// Middleware to verify the JWT token and extract the userId
+function authenticateToken(req, res, next) {
+  const token = req.headers['authorization']?.split(' ')[1]; // Extract the token from the Authorization header
+  if (!token) return res.status(401).json({ error: 'Authentication token is missing' });
+
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+      if (err) return res.status(403).json({ error: 'Invalid or expired token' });
+      req.user = user; // Attach the user object (which contains userId) to the request object
+      next(); // Proceed to the next middleware or route handler
+  });
+}
+
 // Get all blogs
 app.get('/api/blogs', (req, res) => {
   pool.query('SELECT blogs.*, profile.name FROM blogs JOIN profile ON blogs.author_id = profile.id', (err, result) => {
@@ -53,8 +66,9 @@ app.get('/api/blogs/:id', (req, res) => {
 });
 
 // Create a new blog
-app.post('/api/blogs', (req, res) => {
-  let { title, description, categorie_id, image, author_id } = req.body;
+app.post('/api/blogs', authenticateToken, (req, res) => {
+  let { title, description, categorie_id, image } = req.body;
+  const author_id = req.user.userId;
   image = image || 'default.jpg';
   if (!title || !description || !categorie_id || !author_id) {
     return res.status(400).json({ message: "title, description, categorie_id and author_id are required" });
@@ -156,7 +170,6 @@ app.post('/api/register', async (req, res) => {
 
 // Login
 
-const JWT_SECRET = 'mySuperSecureRandomKey12345!@#$%&*45678';
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
 
