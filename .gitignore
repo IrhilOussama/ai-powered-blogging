@@ -1,0 +1,84 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+-- -----------------------------------------------------
+-- Schema 'ai_powered_blogging_db'
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema 'ai_powered_blogging_db'
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `'ai_powered_blogging_db'` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
+USE `'ai_powered_blogging_db'` ;
+
+-- -----------------------------------------------------
+-- Table `'ai_powered_blogging_db'`.`users`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `'ai_powered_blogging_db'`.`users` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(255) NOT NULL,
+  `email` VARCHAR(255) NOT NULL,
+  `email_verified_at` TIMESTAMP NULL DEFAULT NULL,
+  `password` VARCHAR(255) NOT NULL,
+  `remember_token` VARCHAR(100) NULL DEFAULT NULL,
+  `created_at` TIMESTAMP NULL DEFAULT NULL,
+  `updated_at` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `users_email_unique` (`email` ASC) VISIBLE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 22
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `'ai_powered_blogging_db'`.`categories`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `'ai_powered_blogging_db'`.`categories` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(255) NOT NULL,
+  `created_at` TIMESTAMP NULL DEFAULT NULL,
+  `updated_at` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 81
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `'ai_powered_blogging_db'`.`blogs`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `'ai_powered_blogging_db'`.`blogs` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(255) NOT NULL,
+  `description` TEXT NOT NULL,
+  `categorie_id` BIGINT UNSIGNED NOT NULL,
+  `rank` INT NULL DEFAULT NULL,
+  `image` VARCHAR(255) NOT NULL DEFAULT 'blogs/default.jpg',
+  `created_at` TIMESTAMP NULL DEFAULT NULL,
+  `updated_at` TIMESTAMP NULL DEFAULT NULL,
+  `author_id` BIGINT UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `blogs_categorie_id_foreign` (`categorie_id` ASC) VISIBLE,
+  INDEX `blogs_author_id_foreign` (`author_id` ASC) VISIBLE,
+  CONSTRAINT `blogs_author_id_foreign`
+    FOREIGN KEY (`author_id`)
+    REFERENCES `'ai_powered_blogging_db'`.`users` (`id`),
+  CONSTRAINT `blogs_categorie_id_foreign`
+    FOREIGN KEY (`categorie_id`)
+    REFERENCES `'ai_powered_blogging_db'`.`categories` (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 21
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
